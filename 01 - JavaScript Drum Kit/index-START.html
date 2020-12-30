@@ -57,8 +57,46 @@
   <audio data-key="75" src="sounds/tom.wav"></audio>
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
-<script>
+  <!--
+  Every time we press a key, keyup or keydown, there is a keyCode that is associated
+  with that key.
 
+  When we keydown and that keyCode has a data-key of 65. We're also going to play
+  the corresponding audio element that also has a data-key of 65.
+  -->
+
+<script>
+  function playsound(e) { // 'e' is an object full of data describing the event
+    // is there an audio element on the page that has a data-key of '65'?
+    /*
+    querySelector because we're only looking for one. Select an 'audio' element.
+    we use an attribute selector [data-key="#"]
+    */
+    const audio = document.querySelector(`audio[data-key="${ e.keyCode }"]`);
+    const key = document.querySelector(`.key[data-key="${ e.keyCode }"]`);
+    if(!audio) return; // stop the function from running all together
+    audio.currentTime = 0; // rewind to the start
+    audio.play();
+    key.classList.add('playing'); // add playing class to key element
+  }
+  function removeTransition(e) {
+    // All of the css transitions happen in the event. So we pick just one.
+    if(e.propertyName !== 'transform') return; // skip it if it's not a transform
+    this.classList.remove('playing');
+  }
+  /*
+  listen on each key for when the 'transitionend' happens.
+  querSelectorAll because we want to listen for every single '.key' element
+  */
+  const keys = document.querySelectorAll('.key');
+  /* Get each key. when you have an array of elements, you cannot listen on all
+  them. You must explicitly loop over every single element and attach an
+  event listening.
+  Listen for 'transitionend', when that ends we're going to run a function
+  called removeTransition.
+  */
+  keys.forEach(key => key.addEventListener('transitionend', removeTransition));
+  window.addEventListener('keydown', playsound); // listen for the keydown event
 </script>
 
 
